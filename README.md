@@ -1,12 +1,12 @@
 # Overlayward
 
-AI Agent 全动作安全沙箱 — Sandbox Manager API Mock 服务器
+AI Agent 安全沙箱
 
 ## 这是什么
 
-Overlayward 是一个让 AI 编程 Agent 的所有操作都在完全隔离环境中运行的安全沙箱系统。当前版本是 **Mock API 服务器**，实现了全部 4 种接入协议（REST / gRPC / MCP / CLI），合作者可以立即开始集成测试。
+Overlayward 是一个让 AI 编程 Agent 的所有操作都在完全隔离环境中运行的安全沙箱系统。当前版本是 **Mock API 服务器**，实现了全部 4 种接入协议（REST / gRPC / MCP / CLI），只是用于测试。
 
-Mock 后端基于内存存储，不需要 VM 或容器环境即可运行。项目骨架按生产架构设计，后续可逐步替换为真实后端。
+Mock 后端基于内存存储，不需要 VM 或容器环境即可运行。项目当前为骨架阶段，后续可逐步替换为真实后端。
 
 ## 快速开始
 
