@@ -1,0 +1,13 @@
+[package]
+name = "overlayward-sdk"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ow-types = { workspace = true }
+ow-grpc = { path = "../ow-grpc" }
+tonic = { workspace = true }
+tokio = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
