@@ -1,0 +1,77 @@
+syntax = "proto3";
+package overlayward.v1;
+
+import "overlayward/v1/common.proto";
+
+service SandboxService {
+  rpc Create(CreateSandboxRequest) returns (CreateSandboxResponse);
+  rpc List(ListSandboxRequest) returns (ListSandboxResponse);
+  rpc GetInfo(SandboxIdRequest) returns (SandboxInfo);
+  rpc Start(SandboxIdRequest) returns (Empty);
+  rpc Pause(SandboxIdRequest) returns (Empty);
+  rpc Resume(SandboxIdRequest) returns (Empty);
+  rpc Stop(StopSandboxRequest) returns (Empty);
+  rpc Destroy(DestroySandboxRequest) returns (Empty);
+}
+
+message CreateSandboxRequest {
+  string name = 1;
+  int32 cpu = 2;
+  string memory = 3;
+  string disk = 4;
+  string image = 5;
+  GpuConfig gpu = 6;
+  map<string, string> labels = 7;
+  NetworkPolicy network_policy = 8;
+}
+
+message CreateSandboxResponse {
+  string sandbox_id = 1;
+  string name = 2;
+  string status = 3;
+  string created_at = 4;
+  ConnectionInfo connection = 5;
+}
+
+message ConnectionInfo {
+  uint32 vsock_cid = 1;
+  string api_endpoint = 2;
+}
+
+message StopSandboxRequest {
+  string sandbox_id = 1;
+  bool force = 2;
+}
+
+message DestroySandboxRequest {
+  string sandbox_id = 1;
+  bool keep_snapshots = 2;
+  bool keep_audit_logs = 3;
+}
+
+message ListSandboxRequest {
+  string status = 1;
+  map<string, string> labels = 2;
+  string owner = 3;
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+message ListSandboxResponse {
+  repeated SandboxInfo sandboxes = 1;
+  int32 total = 2;
+  bool has_more = 3;
+}
+
+message SandboxInfo {
+  string sandbox_id = 1;
+  string name = 2;
+  string status = 3;
+  int32 cpu = 4;
+  string memory = 5;
+  string disk = 6;
+  string uptime = 7;
+  string owner = 8;
+  string created_at = 9;
+  map<string, string> labels = 10;
+}

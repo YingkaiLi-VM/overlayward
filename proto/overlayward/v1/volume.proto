@@ -1,0 +1,32 @@
+syntax = "proto3";
+package overlayward.v1;
+
+import "overlayward/v1/common.proto";
+
+service VolumeService {
+  rpc Mount(VolumeMountRequest) returns (Empty);
+  rpc Unmount(VolumeUnmountRequest) returns (Empty);
+  rpc List(SandboxIdRequest) returns (VolumeListResponse);
+}
+
+message VolumeMountRequest {
+  string sandbox_id = 1;
+  string host_path = 2;
+  string guest_path = 3;
+  string mode = 4;
+}
+
+message VolumeUnmountRequest {
+  string sandbox_id = 1;
+  string guest_path = 2;
+}
+
+message VolumeListResponse {
+  repeated VolumeInfo volumes = 1;
+}
+
+message VolumeInfo {
+  string host_path = 1;
+  string guest_path = 2;
+  string mode = 3;
+}

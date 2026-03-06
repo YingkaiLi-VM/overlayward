@@ -1,0 +1,46 @@
+syntax = "proto3";
+package overlayward.v1;
+
+import "overlayward/v1/common.proto";
+
+service ResourceService {
+  rpc GetUsage(SandboxIdRequest) returns (ResourceUsage);
+  rpc Resize(ResourceResizeRequest) returns (Empty);
+}
+
+message ResourceUsage {
+  CpuUsage cpu = 1;
+  MemoryUsage memory = 2;
+  DiskUsage disk = 3;
+  GpuUsage gpu = 4;
+}
+
+message CpuUsage {
+  uint32 allocated = 1;
+  double usage_percent = 2;
+}
+
+message MemoryUsage {
+  string allocated = 1;
+  string used = 2;
+  double usage_percent = 3;
+}
+
+message DiskUsage {
+  string allocated = 1;
+  string used = 2;
+  double usage_percent = 3;
+}
+
+message GpuUsage {
+  string device = 1;
+  string memory_used = 2;
+  double utilization_percent = 3;
+}
+
+message ResourceResizeRequest {
+  string sandbox_id = 1;
+  int32 cpu = 2;
+  string memory = 3;
+  string disk = 4;
+}

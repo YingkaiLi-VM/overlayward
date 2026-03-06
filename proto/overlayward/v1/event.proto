@@ -1,0 +1,18 @@
+syntax = "proto3";
+package overlayward.v1;
+
+service EventService {
+  rpc Subscribe(EventSubscribeRequest) returns (stream Event);
+}
+
+message EventSubscribeRequest {
+  string sandbox_id = 1;
+  repeated string event_types = 2;
+}
+
+message Event {
+  string type = 1;
+  string timestamp = 2;
+  string sandbox_id = 3;
+  bytes data = 4;
+}

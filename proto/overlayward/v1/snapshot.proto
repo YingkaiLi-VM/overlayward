@@ -1,0 +1,54 @@
+syntax = "proto3";
+package overlayward.v1;
+
+import "overlayward/v1/common.proto";
+
+service SnapshotService {
+  rpc Save(SaveSnapshotRequest) returns (SnapshotInfo);
+  rpc List(SandboxIdRequest) returns (ListSnapshotResponse);
+  rpc Restore(RestoreSnapshotRequest) returns (Empty);
+  rpc Delete(DeleteSnapshotRequest) returns (Empty);
+  rpc Diff(DiffSnapshotRequest) returns (DiffSnapshotResponse);
+}
+
+message SaveSnapshotRequest {
+  string sandbox_id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message SnapshotInfo {
+  string snapshot_id = 1;
+  string name = 2;
+  string sandbox_id = 3;
+  string created_at = 4;
+  string size = 5;
+  string audit_pointer = 6;
+}
+
+message ListSnapshotResponse {
+  repeated SnapshotInfo snapshots = 1;
+}
+
+message RestoreSnapshotRequest {
+  string sandbox_id = 1;
+  string snapshot_id = 2;
+}
+
+message DeleteSnapshotRequest {
+  string sandbox_id = 1;
+  string snapshot_id = 2;
+}
+
+message DiffSnapshotRequest {
+  string sandbox_id = 1;
+  string from = 2;
+  string to = 3;
+}
+
+message DiffSnapshotResponse {
+  repeated string files_added = 1;
+  repeated string files_modified = 2;
+  repeated string files_deleted = 3;
+  string summary = 4;
+}

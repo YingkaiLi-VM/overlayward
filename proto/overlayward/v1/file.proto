@@ -1,0 +1,66 @@
+syntax = "proto3";
+package overlayward.v1;
+
+import "overlayward/v1/common.proto";
+
+service FileService {
+  rpc Read(FileReadRequest) returns (FileContent);
+  rpc Write(FileWriteRequest) returns (Empty);
+  rpc List(FileListRequest) returns (FileListResponse);
+  rpc Upload(stream FileUploadChunk) returns (Empty);
+  rpc Download(FileDownloadRequest) returns (stream FileDownloadChunk);
+}
+
+message FileReadRequest {
+  string sandbox_id = 1;
+  string path = 2;
+  int64 offset = 3;
+  int64 limit = 4;
+}
+
+message FileContent {
+  bytes content = 1;
+  int64 size = 2;
+  string mode = 3;
+}
+
+message FileWriteRequest {
+  string sandbox_id = 1;
+  string path = 2;
+  bytes content = 3;
+  string mode = 4;
+}
+
+message FileListRequest {
+  string sandbox_id = 1;
+  string path = 2;
+  bool recursive = 3;
+}
+
+message FileListResponse {
+  repeated FileEntry entries = 1;
+}
+
+message FileEntry {
+  string name = 1;
+  string path = 2;
+  bool is_dir = 3;
+  int64 size = 4;
+  string mode = 5;
+  string modified_at = 6;
+}
+
+message FileUploadChunk {
+  string sandbox_id = 1;
+  string dest_path = 2;
+  bytes data = 3;
+}
+
+message FileDownloadRequest {
+  string sandbox_id = 1;
+  string path = 2;
+}
+
+message FileDownloadChunk {
+  bytes data = 1;
+}
