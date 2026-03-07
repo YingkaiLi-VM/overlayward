@@ -28,7 +28,8 @@ Overlayward 是一个让 AI 编程 Agent 的所有操作都在完全隔离环境
 - 审计日志查询与操作回放
 - 审批流程（人类审批门）
 - 服务发现 + 心跳检测
-- 两种部署模式：完整部署（serve-all）和最小部署（仅 ow-sandbox + CLI 直连）
+- 两种部署模式：完整部署（serve-all）和最小部署（仅 ow-sandbox）
+- ow-sandbox 独立二合一工具（服务器 + CLI 客户端，一个二进制搞定最小部署）
 - 多语言 SDK 骨架（Rust / C / Go / Python / C++）
 - 19 个 MCP Tool 完整实现
 
@@ -135,7 +136,7 @@ REGEN_PROTO=1 cargo build
 | `overlayward` | 统一入口：serve-all / mcp-server / CLI 客户端 |
 | `ow-gateway` | API 网关（REST :8420 + gRPC :8425 + MCP :8426） |
 | `ow-policy` | 策略引擎（:8421） |
-| `ow-sandbox` | 沙箱引擎（:8422） |
+| `ow-sandbox` | 沙箱引擎（:8422）— 自包含二合一：服务器 + CLI 客户端 |
 | `ow-audit` | 审计系统（:8423） |
 | `ow-data` | 数据交换（:8424） |
 
@@ -166,15 +167,36 @@ ow-policy &      # :8421（心跳检测 sandbox/audit/data）
 ow-gateway &     # :8420（心跳检测 policy）
 ```
 
-#### 最小部署（仅沙箱引擎 + CLI 直连）
+#### 最小部署（ow-sandbox 独立二合一）
+
+`ow-sandbox` 是自包含的二合一工具，既能当服务器，又能当 CLI 客户端。最小部署只需这一个二进制：
 
 ```bash
-ow-sandbox                                              # 启动沙箱引擎
-overlayward --direct create --name test --cpu 2          # CLI 直连，不需要 Token
-overlayward --direct exec sb-xxx -- npm install express  # 直连执行命令
+# 终端 1: 启动沙箱引擎
+ow-sandbox serve --port 8422
+
+# 终端 2: 直接操作（连 localhost:8422，无需 Token，无需 overlayward）
+ow-sandbox create --name test --cpu 2 --memory 4GB
+ow-sandbox list
+ow-sandbox start sb-xxx
+ow-sandbox exec sb-xxx -- npm install express
+ow-sandbox snapshot save sb-xxx --name checkpoint
+ow-sandbox snapshot list sb-xxx
+ow-sandbox resource usage sb-xxx
+ow-sandbox info sb-xxx
+ow-sandbox stop sb-xxx
+ow-sandbox destroy sb-xxx
+
+# JSON 输出
+ow-sandbox --output json list
+
+# 自定义连接地址
+ow-sandbox --endpoint http://192.168.1.10:8422 list
 ```
 
-直连模式不支持审计、审批、网络策略、共享卷等功能（需要完整部署）。
+不需要 `overlayward --direct`，`ow-sandbox` 本身就是完整的最小部署工具。不暴露审计、审批、网络策略、共享卷等命令（这些属于完整部署）。
+
+`overlayward --direct` 仍然可用，效果相同。
 
 #### 健康检查
 
@@ -365,7 +387,8 @@ Overlayward is a security sandbox system that runs all AI programming Agent oper
 - Audit log query and operation replay
 - Approval workflow (human approval gate)
 - Service discovery + heartbeat detection
-- Two deployment modes: full (serve-all) and minimal (ow-sandbox only + direct CLI)
+- Two deployment modes: full (serve-all) and minimal (ow-sandbox only)
+- ow-sandbox standalone 2-in-1 tool (server + CLI client, single binary for minimal deployment)
 - Multi-language SDK scaffolding (Rust / C / Go / Python / C++)
 - 19 MCP Tools fully implemented
 
@@ -461,8 +484,8 @@ REGEN_PROTO=1 cargo build
 |------|---------|
 | `overlayward` | Unified entry: serve-all / mcp-server / CLI client |
 | `ow-gateway` | API Gateway (REST :8420 + gRPC :8425 + MCP :8426) |
+| `ow-sandbox` | Sandbox Engine (:8422) -- self-contained 2-in-1: server + CLI client |
 | `ow-policy` | Policy Engine (:8421) |
-| `ow-sandbox` | Sandbox Engine (:8422) |
 | `ow-audit` | Audit System (:8423) |
 | `ow-data` | Data Exchange (:8424) |
 
@@ -483,15 +506,36 @@ ow-policy &      # :8421 (heartbeat checks sandbox/audit/data)
 ow-gateway &     # :8420 (heartbeat checks policy)
 ```
 
-#### Minimal Deployment (sandbox engine + direct CLI)
+#### Minimal Deployment (ow-sandbox standalone 2-in-1)
+
+`ow-sandbox` is a self-contained 2-in-1 tool -- both server and CLI client. Only this single binary is needed for minimal deployment:
 
 ```bash
-ow-sandbox                                              # Start sandbox engine
-overlayward --direct create --name test --cpu 2          # Direct CLI, no token needed
-overlayward --direct exec sb-xxx -- npm install express  # Execute command directly
+# Terminal 1: Start sandbox engine
+ow-sandbox serve --port 8422
+
+# Terminal 2: Operate directly (connects localhost:8422, no token, no overlayward needed)
+ow-sandbox create --name test --cpu 2 --memory 4GB
+ow-sandbox list
+ow-sandbox start sb-xxx
+ow-sandbox exec sb-xxx -- npm install express
+ow-sandbox snapshot save sb-xxx --name checkpoint
+ow-sandbox snapshot list sb-xxx
+ow-sandbox resource usage sb-xxx
+ow-sandbox info sb-xxx
+ow-sandbox stop sb-xxx
+ow-sandbox destroy sb-xxx
+
+# JSON output
+ow-sandbox --output json list
+
+# Custom endpoint
+ow-sandbox --endpoint http://192.168.1.10:8422 list
 ```
 
-Audit, approval, network policy, and shared volume features require full deployment.
+No need for `overlayward --direct` -- `ow-sandbox` itself is the complete minimal deployment tool. Audit, approval, network policy, and shared volume commands are not exposed (they require full deployment).
+
+`overlayward --direct` still works as an alternative.
 
 #### Health Check
 
